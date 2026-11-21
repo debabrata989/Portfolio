@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEBA AI - Modern Chat Assistant</title>
+    <meta name="description" content="DEBA AI is a modern, fast, and responsive AI chat assistant designed to answer your questions and help you with your tasks.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+</head>
+<body>
+    <!-- Auth Modal (Optional popup, never blocks chatbot on open) -->
+    <div id="auth-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card auth-box">
+            <button class="close-modal" id="close-auth-btn" aria-label="Close Login Modal">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="logo" style="text-align: center; justify-content: center; margin-bottom: 1rem;">
+                <span class="material-symbols-rounded logo-icon">auto_awesome</span>
+                <h2>DEBA AI</h2>
+            </div>
+            <h2 id="auth-title" style="text-align: center; margin-bottom: 0.5rem;">Welcome Back</h2>
+            <p id="auth-subtitle" style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">Login to save your chat history</p>
+            
+            <form id="auth-form" class="auth-form">
+                <div class="input-group">
+                    <span class="material-symbols-rounded">person</span>
+                    <input type="text" id="auth-username" required placeholder="Username" autocomplete="off" />
+                </div>
+                <div class="input-group">
+                    <span class="material-symbols-rounded">lock</span>
+                    <input type="password" id="auth-password" required placeholder="Password" />
+                </div>
+                <!-- Error msg -->
+                <p id="auth-error" class="error-msg"></p>
+                <button type="submit" id="auth-submit-btn" class="primary-btn">Login</button>
+            </form>
+            
+            <div class="auth-switch">
+                <span id="auth-switch-text">Don't have an account?</span>
+                <button id="auth-switch-btn" type="button">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container" id="app-container" style="display: flex;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="material-symbols-rounded logo-icon">auto_awesome</span>
+                    <h2>DEBA AI</h2>
+                </div>
+                <button id="new-chat-btn" class="new-chat-btn" aria-label="New Chat">
+                    <span class="material-symbols-rounded">add</span>
+                    <span class="btn-text">New chat</span>
+                </button>
+            </div>
+            
+            <div class="recent-chats">
+                <p class="section-title">Recent</p>
+                <div class="chat-history-list">
+                    <!-- History items will be populated here -->
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle light/dark theme">
+                    <span class="material-symbols-rounded" id="theme-icon">light_mode</span>
+                    <span class="btn-text" id="theme-text">Light Mode</span>
+                </button>
+                <button class="icon-btn" id="open-settings-btn" aria-label="Settings">
+                    <span class="material-symbols-rounded">settings</span>
+                    <span class="btn-text">Settings</span>
+                </button>
+                <button class="icon-btn upgrade-btn" id="upgrade-btn-sidebar" aria-label="Upgrade to Pro">
+                    <span class="material-symbols-rounded" style="color:#d4af37;">diamond</span>
+                    <span class="btn-text" style="color:#d4af37; font-weight:600;">Upgrade to Pro</span>
+                </button>
+                <div class="user-profile" id="user-profile-btn" style="cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" title="View Profile & Settings">
+                    <div class="avatar" id="user-avatar-text">U</div>
+                    <span class="user-name" id="user-profile-name">User</span>
+                </div>
+                <button id="login-open-btn" class="icon-btn" style="display: none; color: #10a37f; margin-top: 0.5rem;">
+                    <span class="material-symbols-rounded">login</span>
+                    <span class="btn-text">Log In / Sign Up</span>
+                </button>
+                <button id="logout-btn" class="icon-btn" style="color:#ff6b6b; margin-top:0.5rem;">
+                    <span class="material-symbols-rounded">logout</span>
+                    <span class="btn-text">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <header class="chat-header">
+                <button id="sidebar-toggle" class="mobile-only icon-btn-nav" aria-label="Toggle Sidebar">
+                    <span class="material-symbols-rounded">menu</span>
+                </button>
+                <div class="model-selector">
+                    <span>DEBA-Pro</span>
+                    <span class="material-symbols-rounded">expand_more</span>
+                </div>
+                <button id="share-btn" class="icon-btn-nav" aria-label="Share">
+                    <span class="material-symbols-rounded">ios_share</span>
+                </button>
+            </header>
+
+            <div class="chat-container" id="chat-container">
+                <!-- Welcome Screen -->
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-icon">
+                        <span class="material-symbols-rounded">auto_awesome</span>
+                    </div>
+                    <h1>How can I help you today?</h1>
+                    
+                    <div class="suggestion-cards">
+                        <div class="card" onclick="setInputAndSubmit('Write a short sci-fi story about a rogue AI')">
+                            <span class="material-symbols-rounded card-icon">edit_document</span>
+                            <p>Write a short sci-fi story</p>
+                        </div>
+                        <div class="card" onclick="setInputAndSubmit('Explain quantum computing to a 5-year old')">
+                            <span class="material-symbols-rounded card-icon">lightbulb</span>
+                            <p>Explain quantum computing</p>
+                        </div>
+                        <div class="card" onclick="setInputAndSubmit('How do I center a div in CSS?')">
+                            <span class="material-symbols-rounded card-icon">code</span>
+                            <p>How do I center a div</p>
+                        </div>
+                        <div class="card" onclick="setInputAndSubmit('Plan a 3-day trip to Tokyo')">
+                            <span class="material-symbols-rounded card-icon">flight_takeoff</span>
+                            <p>Plan a 3-day trip</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Messages will go here -->
+                <div class="messages-wrapper" id="messages-wrapper"></div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area-container">
+                <!-- Image Preview Container -->
+                <div id="image-preview-container" style="display: none; width: 100%; max-width: 800px; padding: 0.5rem; margin-bottom: 0.5rem; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); position: relative;">
+                    <img id="image-preview" src="" style="height: 60px; border-radius: 8px; object-fit: cover;">
+                    <button id="remove-image-btn" style="position: absolute; top:5px; left:5px; background:rgba(0,0,0,0.6); color:#fff; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                        <span class="material-symbols-rounded" style="font-size:16px;">close</span>
+                    </button>
+                </div>
+
+                <div class="input-bar">
+                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+                    <button class="attach-btn" id="attach-btn" aria-label="Attach file">
+                        <span class="material-symbols-rounded">attach_file</span>
+                    </button>
+                    <textarea id="chat-input" placeholder="Message DEBA AI..." rows="1" aria-label="Chat input"></textarea>
+                    <button id="voice-btn" class="voice-btn" aria-label="Voice input">
+                        <span class="material-symbols-rounded" id="voice-icon">mic</span>
+                    </button>
+                    <button id="send-btn" class="send-btn" aria-label="Send message">
+                        <span class="material-symbols-rounded">send</span>
+                    </button>
+                </div>
+                <div class="disclaimer">
+                    DEBA AI can make mistakes. Consider verifying important information.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Pro Subscription Modal -->
+    <div id="pro-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <button class="close-modal" id="close-modal-btn">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <h2 class="modal-title">Upgrade your plan</h2>
+            
+            <div class="plans-container">
+                <!-- Free Plan -->
+                <div class="plan-card">
+                    <h3>Free</h3>
+                    <div class="price">₹0<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><span class="material-symbols-rounded">check</span> Standard response speed</li>
+                        <li><span class="material-symbols-rounded">check</span> Basic model access</li>
+                        <li><span class="material-symbols-rounded">check</span> Standard usage limits</li>
+                    </ul>
+                    <button class="plan-btn current-plan" disabled>Your Current Plan</button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="plan-card pro-card">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <h3>DEBA Pro <span class="material-symbols-rounded" style="font-size: 1.2rem; vertical-align: middle;">diamond</span></h3>
+                    <div class="price">₹1,999<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><span class="material-symbols-rounded">check</span> Access to fastest models</li>
+                        <li><span class="material-symbols-rounded">check</span> Priority response time</li>
+                        <li><span class="material-symbols-rounded">check</span> Unlimited API usage</li>
+                        <li><span class="material-symbols-rounded">check</span> Advanced Data Analysis</li>
+                    </ul>
+                    <button class="plan-btn upgrade-action-btn" id="pay-pro-btn">Upgrade to Pro</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 500px;">
+            <button class="close-modal" id="close-settings-btn">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <h2 class="modal-title" style="margin-bottom:1rem; text-align:left; border-bottom:1px solid var(--border-color); padding-bottom:1rem;">Settings</h2>
+            
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h3>Account</h3>
+                    <div class="settings-row">
+                        <span>Username:</span>
+                        <strong id="settings-username-display">User</strong>
+                    </div>
+                </div>
+
+                <div class="settings-section" style="margin-top: 2rem;">
+                    <h3>Danger Zone</h3>
+                    <div class="settings-row" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Delete all chat history permanently</span>
+                        <button id="delete-chats-btn" class="danger-btn">Delete All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 400px; text-align: center;">
+            <button class="close-modal" id="close-profile-btn">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+            <div class="profile-header" style="margin-top: 1rem;">
+                <div class="avatar" id="profile-modal-avatar" style="width: 80px; height: 80px; font-size: 2.5rem; margin: 0 auto 1rem; cursor: default;">U</div>
+                <h2 id="profile-modal-name" style="margin-bottom: 0.5rem;">User</h2>
+                <div id="profile-modal-badge" style="color:#d4af37; font-size: 0.9rem; margin-bottom: 1.5rem; display: none;">
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem; vertical-align: middle;">diamond</span> Pro Member
+                </div>
+            </div>
+            
+            <div class="profile-content" style="text-align: left; background: var(--bg-primary); border: 1px solid var(--border-color); padding: 1.2rem; border-radius: 12px; margin-top: 1rem;">
+                <div class="settings-row" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <span style="color: var(--text-secondary);">Status:</span>
+                    <strong style="color: #10a37f;">Active Online</strong>
+                </div>
+                <div class="settings-row" style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">Total Chats:</span>
+                    <strong id="profile-chats-count">0</strong>
+                </div>
+            </div>
+            
+            <button id="profile-logout-btn" class="danger-btn" style="width: 100%; margin-top: 1.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; background: transparent; border: 1px solid #ff6b6b; color: #ff6b6b;" onmouseover="this.style.background='#ff6b6b'; this.style.color='#fff';" onmouseout="this.style.background='transparent'; this.style.color='#ff6b6b';">
+                <span class="material-symbols-rounded">logout</span> Sign Out
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

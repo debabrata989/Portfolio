@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #0a0a0e;
+  --bg-secondary: #12121c;
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a0b0;
+  --accent-cyan: #00f0ff;
+  --accent-purple: #b300ff;
+  --accent-blue: #0088ff;
+  --gradient-glow: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --nav-bg: rgba(10, 10, 14, 0.7);
+}
+
+[data-theme='light'] {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --text-primary: #1a1a24;
+  --text-secondary: #4a4a5a;
+  --glass-bg: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --nav-bg: rgba(248, 249, 250, 0.7);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  user-select: none; /* Let's keep it mostly selectable but wait, cursor depends on custom, might be better to just leave standard */
+}
+
+body.loading {
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: none; /* for custom cursor */
+}
+
+button, input, textarea {
+  font-family: inherit;
+  color: inherit;
+  cursor: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+/* Neon Glow Effect Utils */
+.glow-text {
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.5), 0 0 40px rgba(179, 0, 255, 0.3);
+}
+
+.gradient-text {
+  background: var(--gradient-glow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  position: relative;
+}
+
+.section-title {
+  font-size: 3rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 4px;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gradient-glow);
+  border-radius: 2px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent-purple);
+  border-radius: 4px;
+}
+
+/* Base custom cursor rule */
+body, a, button, .clickable {
+  cursor: none !important;
+}
